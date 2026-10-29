@@ -9,7 +9,7 @@ async function runGeminiClientTests() {
 
     const config = getGeminiConfig();
     assert.equal(config.isConfigured, false, 'Unset key must report isConfigured: false');
-    assert.equal(config.model, 'gemini-3.8-flash', 'Must default to gemini-3.8-flash');
+    assert.equal(config.model, 'gemini-2.5-flash', 'Must default to gemini-2.5-flash');
 
     // Placeholder key
     process.env.GEMINI_API_KEY = 'your_gemini_api_key_here';

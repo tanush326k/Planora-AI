@@ -22,7 +22,8 @@ export interface GeminiConfig {
 export function getGeminiConfig(): GeminiConfig {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   // Target documented stable model ID, configurable via GEMINI_MODEL
-  const model = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
+  // Valid IDs (Google GenAI API, 2025): gemini-2.5-flash, gemini-2.0-flash, gemini-2.5-flash-lite
+  const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash';
 
   const isConfigured = Boolean(
     apiKey &&
@@ -265,7 +266,7 @@ Provide structured output conforming exactly to the JSON schema.`;
   let parsed: RawGeminiOutput;
   try {
     parsed = JSON.parse(responseText) as RawGeminiOutput;
-  } catch (parseErr) {
+  } catch {
     throw new GeminiError(
       'Failed to parse structured JSON response from Gemini.',
       'MALFORMED_OUTPUT',

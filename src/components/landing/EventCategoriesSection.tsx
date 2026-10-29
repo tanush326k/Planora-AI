@@ -19,7 +19,7 @@ export function EventCategoriesSection() {
             Choose Your Celebration Type
           </p>
           <p className="mt-3 text-base text-stone-600 dark:text-stone-300">
-            Every event has a unique rhythm. GatherWise AI applies specialized planning logic, booking windows, and budget breakdowns tailored to your specific occasion.
+            Every event has a unique rhythm. Planora AI applies specialized planning logic, booking windows, and budget breakdowns tailored to your specific occasion.
           </p>
         </div>
 

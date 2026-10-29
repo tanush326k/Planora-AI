@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Date utilities for date-aware timeline calculations
+ * Planora AI — Date utilities for date-aware timeline calculations
  */
 
 export function calculateDaysRemaining(eventDateISO: string, relativeToDate = new Date()): number {

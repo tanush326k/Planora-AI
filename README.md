@@ -1,4 +1,4 @@
-# GatherWise AI — Intelligent Event Planning Assistant
+# Planora AI — Every celebration, brilliantly planned.
 
 > A GenAI-powered planning assistant for **Weddings**, **Birthdays**, and **Community Gatherings**, engineered with deterministic budget allocation, date-aware timelines, vendor checklists, and creative concept generation.
 
@@ -6,7 +6,7 @@
 
 ## 🌟 Overview & Architecture
 
-Event planning is often fragmented across multiple spreadsheets, notes apps, and overwhelming vendor catalogs. **GatherWise AI** introduces calm and clarity by pairing:
+Event planning is often fragmented across multiple spreadsheets, notes apps, and overwhelming vendor catalogs. **Planora AI** introduces calm and clarity by pairing:
 
 1. **Deterministic Calculation Engine** (Mathematical Guarantees):
    - **Hard Budget Ceilings**: Strict dollar allocation math reconciling 100% to your total budget.

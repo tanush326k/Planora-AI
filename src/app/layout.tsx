@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'GatherWise AI — Intelligent Event Planning for Weddings, Birthdays & Community',
-  description: 'AI-assisted event planning with deterministic budget modeling, date-aware timelines, vendor checklists, and creative concept generation.',
-  keywords: ['event planning', 'wedding planner', 'birthday planning', 'community event', 'budget tracker', 'genai'],
+  title: 'Planora AI — Every celebration, brilliantly planned.',
+  description: 'Planora AI: Every celebration, brilliantly planned. Intelligent event planning for weddings, birthdays, and community gatherings with deterministic budget modeling, date-aware timelines, and Google GenAI.',
+  keywords: ['Planora AI', 'event planning', 'wedding planner', 'birthday planning', 'community event', 'budget tracker', 'genai'],
 };
 
 export default function RootLayout({

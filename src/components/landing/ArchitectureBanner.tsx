@@ -15,7 +15,7 @@ export function ArchitectureBanner() {
             </h2>
 
             <p className="text-stone-300 text-base leading-relaxed mb-6">
-              GatherWise AI avoids brittle, hallucinated end-to-end LLM prompts. Instead, it pairs a deterministic calculation engine (for hard budget ceilings and backwards milestone dates) with Google Gemini 3.8 Flash (for personalized theme concepts, vendor questions, and creative sparks).
+              Planora AI avoids brittle, hallucinated end-to-end LLM prompts. Instead, it pairs a deterministic calculation engine (for hard budget ceilings and backwards milestone dates) with Google Gemini 3.8 Flash (for personalized theme concepts, vendor questions, and creative sparks).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-stone-700/80 pt-6 mb-8">

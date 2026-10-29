@@ -46,7 +46,7 @@ export function FeatureHighlights() {
             Engineered For Reliability
           </h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-100 sm:text-4xl">
-            Four Pillars of GatherWise AI
+            Four Pillars of Planora AI
           </p>
           <p className="mt-3 text-base text-stone-600 dark:text-stone-300">
             A balanced architecture pairing deterministic mathematical guarantees with generative creative ideation.

@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Server-Side Google GenAI Client
+ * Planora AI — Server-Side Google GenAI Client
  *
  * Implements Google GenAI SDK integration using @google/genai.
  * Secrets are strictly isolated server-side.
@@ -196,7 +196,8 @@ export async function generatePlanWithGemini(
   const ai = new GoogleGenAI({ apiKey: config.apiKey });
   const daysRemaining = calculateDaysRemaining(details.date);
 
-  const prompt = `You are GatherWise AI, an expert event planner specializing in ${details.type}s.
+  const prompt = `You are Planora AI, an expert event planner specializing in ${details.type}s.
+Every celebration, brilliantly planned.
 Create a thoughtful, date-aware, and creative plan tailored to:
 
 Event Title: ${details.title}
@@ -264,7 +265,7 @@ Provide structured output conforming exactly to the JSON schema.`;
   let parsed: RawGeminiOutput;
   try {
     parsed = JSON.parse(responseText) as RawGeminiOutput;
-  } catch {
+  } catch (parseErr) {
     throw new GeminiError(
       'Failed to parse structured JSON response from Gemini.',
       'MALFORMED_OUTPUT',
@@ -449,12 +450,12 @@ function reconcileVendorChecklist(
     minFrac: number;
     maxFrac: number;
   }> = [
-    { category: 'Venue', title: 'Reception & Ceremony Hall', bookingWindow: '6-9 months before', minFrac: 0.25, maxFrac: 0.4 },
-    { category: 'Catering', title: 'Food & Beverage Partner', bookingWindow: '4-6 months before', minFrac: 0.2, maxFrac: 0.3 },
-    { category: 'Media', title: 'Photographer / Videographer', bookingWindow: '3-6 months before', minFrac: 0.08, maxFrac: 0.15 },
-    { category: 'Entertainment', title: 'DJ / Sound Engineering', bookingWindow: '2-4 months before', minFrac: 0.05, maxFrac: 0.1 },
-    { category: 'Decor', title: 'Florals & Equipment Rentals', bookingWindow: '2-3 months before', minFrac: 0.05, maxFrac: 0.1 },
-  ];
+      { category: 'Venue', title: 'Reception & Ceremony Hall', bookingWindow: '6-9 months before', minFrac: 0.25, maxFrac: 0.4 },
+      { category: 'Catering', title: 'Food & Beverage Partner', bookingWindow: '4-6 months before', minFrac: 0.2, maxFrac: 0.3 },
+      { category: 'Media', title: 'Photographer / Videographer', bookingWindow: '3-6 months before', minFrac: 0.08, maxFrac: 0.15 },
+      { category: 'Entertainment', title: 'DJ / Sound Engineering', bookingWindow: '2-4 months before', minFrac: 0.05, maxFrac: 0.1 },
+      { category: 'Decor', title: 'Florals & Equipment Rentals', bookingWindow: '2-3 months before', minFrac: 0.05, maxFrac: 0.1 },
+    ];
 
   const items: VendorChecklistItem[] = (recommendations && recommendations.length > 0 ? recommendations : defaultVendors).map(
     (rec, idx) => {
@@ -474,9 +475,9 @@ function reconcileVendorChecklist(
           'keyQuestionsToAsk' in rec && Array.isArray(rec.keyQuestionsToAsk) && rec.keyQuestionsToAsk.length > 0
             ? rec.keyQuestionsToAsk
             : [
-                'What is your cancellation/deposit refund policy?',
-                'Are there any overtime or hidden fees not in the quote?',
-              ],
+              'What is your cancellation/deposit refund policy?',
+              'Are there any overtime or hidden fees not in the quote?',
+            ],
         status: 'not_started',
         notes: 'Planning estimate. Confirm with actual quotes.',
       };

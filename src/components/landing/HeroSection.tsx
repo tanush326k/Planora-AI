@@ -19,7 +19,7 @@ export function HeroSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/80 bg-amber-50/90 px-3.5 py-1 text-xs font-medium text-amber-900 shadow-sm dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300 mb-6">
             <span className="flex h-2 w-2 rounded-full bg-amber-500" />
-            Designed for Weddings, Birthdays & Community Gatherings
+            Planora AI · Every celebration, brilliantly planned.
           </div>
 
           <h1 className="text-4xl font-extrabold tracking-tight text-stone-900 dark:text-stone-50 sm:text-5xl lg:text-6xl">
@@ -30,7 +30,7 @@ export function HeroSection() {
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl leading-relaxed text-stone-600 dark:text-stone-300">
-            GatherWise AI harmonizes intelligent budget modeling, date-aware timelines, and priority vendor checklists. Say goodbye to scattered spreadsheets and last-minute panic.
+            Planora AI harmonizes intelligent budget modeling, date-aware timelines, and priority vendor checklists for weddings, birthdays, and community events.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">

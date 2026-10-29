@@ -6,7 +6,7 @@ export async function GET() {
 
   return NextResponse.json({
     status: 'ok',
-    service: 'GatherWise AI API',
+    service: 'Planora AI API',
     timestamp: new Date().toISOString(),
     geminiConfigured: geminiConfig.isConfigured,
     model: geminiConfig.model,

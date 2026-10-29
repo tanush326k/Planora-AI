@@ -32,7 +32,7 @@ function PlannerContent() {
           </Link>
 
           <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-            GatherWise AI Planner
+            Planora AI Planner
           </span>
         </div>
 
@@ -44,7 +44,7 @@ function PlannerContent() {
                 Create Your Event Plan
               </h1>
               <p className="mt-2 text-stone-600 dark:text-stone-400 text-sm sm:text-base leading-relaxed">
-                Provide your core event details below. GatherWise AI will model your budget ceiling, backwards-calculate your milestone timeline, and generate tailored vendor checklists and creative sparks.
+                Provide your core event details below. Planora AI will model your budget ceiling, backwards-calculate your milestone timeline, and generate tailored vendor checklists and creative sparks.
               </p>
             </div>
 
@@ -71,7 +71,7 @@ export default function PlanPage() {
       fallback={
         <div className="py-24 text-center">
           <div className="inline-block animate-spin h-6 w-6 border-2 border-amber-600 border-t-transparent rounded-full" />
-          <p className="mt-3 text-xs text-stone-500">Loading GatherWise Planner...</p>
+          <p className="mt-3 text-xs text-stone-500">Loading Planora AI Planner...</p>
         </div>
       }
     >

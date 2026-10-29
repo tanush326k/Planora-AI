@@ -1,7 +1,7 @@
 {
-  "name": "gatherwise-ai",
+  "name": "planora-ai",
   "version": "0.1.0",
-  "description": "GatherWise AI - Intelligent event-planning assistant for weddings, birthdays, and community events",
+  "description": "Planora AI - Every celebration, brilliantly planned. Intelligent event-planning assistant for weddings, birthdays, and community events",
   "private": true,
   "scripts": {
     "dev": "next dev",

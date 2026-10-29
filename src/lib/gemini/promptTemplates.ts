@@ -5,7 +5,8 @@ import { EventDetails } from '@/types/event';
  * strictly formatted JSON payload for the event plan.
  */
 export function buildEventPlanPrompt(details: EventDetails, specialRequests?: string): string {
-  return `You are GatherWise AI, an expert event planner specializing in ${details.type}s.
+  return `You are Planora AI, an expert event planner specializing in ${details.type}s.
+Every celebration, brilliantly planned.
 Create a detailed, date-aware, and budget-conscious plan for the following event:
 
 Event Title: ${details.title}

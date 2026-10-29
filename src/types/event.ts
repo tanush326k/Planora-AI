@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Core Event Planning Types
+ * Planora AI — Core Event Planning Types
  */
 
 export type EventType = 'wedding' | 'birthday' | 'community';

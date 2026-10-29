@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const fallbackPlan = generateDeterministicPlan(eventDetails, {
       specialRequests: input.specialRequests,
       vibeKeywords: input.vibeKeywords,
-      reason: 'Gemini API key is not configured in .env.local. Generated via GatherWise deterministic baseline engine.',
+      reason: 'Gemini API key is not configured in .env.local. Generated via Planora AI deterministic baseline engine.',
     });
 
     return NextResponse.json(
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
     const fallbackPlan = generateDeterministicPlan(eventDetails, {
       specialRequests: input.specialRequests,
       vibeKeywords: input.vibeKeywords,
-      reason: `Gemini service encounter: ${safeErrorNotice}. Generated via GatherWise deterministic baseline engine.`,
+      reason: `Gemini service encounter: ${safeErrorNotice}. Generated via Planora AI deterministic baseline engine.`,
     });
 
     return NextResponse.json(

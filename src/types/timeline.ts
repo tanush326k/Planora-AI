@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Date-Aware Timeline Types
+ * Planora AI — Date-Aware Timeline Types
  */
 
 export type TimelinePriority = 'critical' | 'high' | 'medium' | 'low';

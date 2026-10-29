@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — GenAI Contracts & Structured Output Schemas
+ * Planora AI — GenAI Contracts & Structured Output Schemas
  */
 
 import { EventDetails } from './event';

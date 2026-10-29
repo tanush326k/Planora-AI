@@ -9,14 +9,14 @@ export function Navbar() {
           className="group flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 text-white shadow-sm font-bold text-lg group-hover:scale-105 transition-transform">
-            G
+            P
           </div>
           <div className="flex flex-col">
             <span className="text-base font-bold tracking-tight text-stone-900 dark:text-stone-100">
-              GatherWise<span className="text-amber-600 dark:text-amber-500">.ai</span>
+              Planora<span className="text-amber-600 dark:text-amber-500">.ai</span>
             </span>
-            <span className="text-[10px] font-medium tracking-wide uppercase text-stone-500 dark:text-stone-400">
-              Event Intelligence
+            <span className="text-[10px] font-medium tracking-wide text-stone-500 dark:text-stone-400">
+              Every celebration, brilliantly planned.
             </span>
           </div>
         </Link>
@@ -48,7 +48,7 @@ export function Navbar() {
             role="status"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-amber-600 dark:bg-amber-400 animate-pulse" />
-            Phase 2: Foundation
+            Phase 3: GenAI Planner
           </span>
           <a
             href="/plan"

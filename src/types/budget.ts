@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Budget Engine Types
+ * Planora AI — Budget Engine Types
  */
 
 export interface BudgetCategoryAllocation {

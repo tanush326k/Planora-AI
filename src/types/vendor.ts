@@ -1,5 +1,5 @@
 /**
- * GatherWise AI — Vendor Checklist & Booking Priority Types
+ * Planora AI — Vendor Checklist & Booking Priority Types
  */
 
 export type VendorStatus = 'not_started' | 'researching' | 'contacted' | 'booked' | 'rejected';

@@ -5,13 +5,13 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-600 text-white font-bold text-sm">
-              G
+              P
             </div>
             <span className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-100">
-              GatherWise AI
+              Planora AI
             </span>
             <span className="text-xs text-stone-500 dark:text-stone-400">
-              — Intelligent Event Planning
+              — Every celebration, brilliantly planned.
             </span>
           </div>
 

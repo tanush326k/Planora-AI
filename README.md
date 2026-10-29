@@ -14,7 +14,7 @@ Event planning is often fragmented across multiple spreadsheets, notes apps, and
    - **Date-Aware Milestone Math**: Backwards-calculated countdown schedules from the event date.
    - **Zero Hallucination Arithmetic**: Financial totals are never delegated to LLM estimation.
 
-2. **Google GenAI Creative Spark** (Powered by `@google/genai` & `gemini-3.8-flash`):
+2. **Google GenAI Creative Spark** (Powered by `@google/genai` & `gemini-2.5-flash`):
    - **Personalized Theme & Vibe Concepts**: Custom palettes, aesthetic guidance, and atmospheric vision.
    - **Curated Experience Ideas**: Tailored concepts across decor, entertainment, food/beverage, activities, and favors (with DIY badges).
    - **Vetting Questions**: Critical, high-leverage questions to ask before signing vendor contracts.
@@ -98,8 +98,8 @@ d:\EVENT planner/
    Add your Google Gemini API key to `.env.local`:
    ```env
    GEMINI_API_KEY=your_actual_api_key_from_google_ai_studio
-   # Optional model override (defaults to gemini-3.8-flash):
-   GEMINI_MODEL=gemini-3.8-flash
+   # Optional model override (defaults to gemini-2.5-flash):
+   GEMINI_MODEL=gemini-2.5-flash
    ```
 
 ### Development & Build Commands
@@ -147,7 +147,7 @@ d:\EVENT planner/
    ```bash
    curl http://localhost:3000/api/health
    ```
-   Verify that `"geminiConfigured": true` and `"model": "gemini-3.8-flash"`.
+   Verify that `"geminiConfigured": true` and `"model": "gemini-2.5-flash"`.
 3. Submit an event plan in the UI at `/plan` or via curl:
    ```bash
    curl -X POST http://localhost:3000/api/plan/generate \

@@ -37,3 +37,4 @@ import { calculateBaselineBudget } from '../../lib/planning/budgetCalculator';
 }
 
 console.log('All budgetCalculator unit tests passed successfully.');
+

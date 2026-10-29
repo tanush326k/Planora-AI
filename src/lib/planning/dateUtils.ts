@@ -8,7 +8,9 @@ export function calculateDaysRemaining(eventDateISO: string, relativeToDate = ne
     return 0;
   }
   const diffTime = target.getTime() - relativeToDate.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  // Normalize -0 to 0
+  return Object.is(days, -0) || days === 0 ? 0 : days;
 }
 
 export function computeMilestoneTargetDate(eventDateISO: string, daysBeforeEvent: number): string {

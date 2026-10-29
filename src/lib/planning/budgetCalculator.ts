@@ -36,34 +36,43 @@ const DEFAULT_DISTRIBUTIONS: Record<EventType, DefaultCategoryDistribution[]> = 
 
 /**
  * Deterministically calculates a baseline budget allocation based on total budget and event type.
+ * Guarantees that the sum of all categories exactly reconciles to the hard totalBudget limit.
  */
 export function calculateBaselineBudget(totalBudget: number, eventType: EventType, currency = 'USD'): EventBudgetPlan {
-  const safeTotal = Math.max(0, totalBudget);
+  const safeTotal = Math.max(0, Math.round(totalBudget * 100) / 100);
   const distribution = DEFAULT_DISTRIBUTIONS[eventType] || DEFAULT_DISTRIBUTIONS.wedding;
 
-  let allocatedSum = 0;
+  let runningSum = 0;
   let contingencyAmount = 0;
 
   const categories: BudgetCategoryAllocation[] = distribution.map((dist, index) => {
-    const rawAmount = Math.round(safeTotal * dist.percentage);
-    allocatedSum += rawAmount;
+    let amount = 0;
+
+    // For the final category (contingency buffer), assign the exact remaining delta to guarantee 100% reconciliation
+    if (index === distribution.length - 1) {
+      amount = Math.max(0, Math.round((safeTotal - runningSum) * 100) / 100);
+    } else {
+      amount = Math.round(safeTotal * dist.percentage * 100) / 100;
+      runningSum += amount;
+    }
 
     if (dist.name.toLowerCase().includes('contingency')) {
-      contingencyAmount = rawAmount;
+      contingencyAmount = amount;
     }
 
     return {
       id: `cat-${eventType}-${index + 1}`,
       name: dist.name,
       recommendedPercentage: Math.round(dist.percentage * 100),
-      allocatedAmount: rawAmount,
+      allocatedAmount: amount,
       spentAmount: 0,
       description: dist.description,
       items: []
     };
   });
 
-  const unallocatedAmount = Math.max(0, safeTotal - allocatedSum);
+  const totalAllocated = categories.reduce((sum, c) => sum + c.allocatedAmount, 0);
+  const unallocatedAmount = Math.max(0, Math.round((safeTotal - totalAllocated) * 100) / 100);
 
   return {
     totalBudget: safeTotal,

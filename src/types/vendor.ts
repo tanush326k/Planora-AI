@@ -24,3 +24,4 @@ export interface VendorChecklistPlan {
   bookedCount: number;
   items: VendorChecklistItem[];
 }
+

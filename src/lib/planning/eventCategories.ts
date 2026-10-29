@@ -68,3 +68,4 @@ export const EVENT_CATEGORIES: Record<EventType, EventCategoryInfo> = {
     ]
   }
 };
+

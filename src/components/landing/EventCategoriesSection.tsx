@@ -92,7 +92,7 @@ export function EventCategoriesSection() {
 
               <div className="pt-2 flex flex-wrap gap-3">
                 <a
-                  href="#plan-builder"
+                  href={`/plan?type=${selectedType}`}
                   className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition"
                 >
                   Plan my {currentCategory.title.split(' ')[0]}

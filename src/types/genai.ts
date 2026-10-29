@@ -21,22 +21,34 @@ export interface PersonalizedIdea {
   diyFriendly: boolean;
 }
 
+export interface ThemeConcept {
+  name: string;
+  description: string;
+  colorPalette: string[];
+}
+
 export interface GeneratedEventPlan {
   id: string;
   createdAt: string;
   eventDetails: EventDetails;
   executiveSummary: string;
+  themeConcept: ThemeConcept;
   budgetPlan: EventBudgetPlan;
   timelinePlan: EventTimelinePlan;
   vendorPlan: VendorChecklistPlan;
   personalizedIdeas: PersonalizedIdea[];
+  assumptionsAndRecommendations: string[];
+  source: 'gemini' | 'deterministic_fallback';
+  modelUsed?: string;
+  isFallback: boolean;
+  generationNotes?: string;
 }
 
 export interface PlanRefinementRequest {
   planId: string;
   currentPlan: GeneratedEventPlan;
   userMessage: string;
-  chatHistory: Array<{ role: 'user' | 'assistant'; content: string }>;
+  chatHistory?: Array<{ role: 'user' | 'assistant'; content: string }>;
 }
 
 export interface PlanRefinementResponse {

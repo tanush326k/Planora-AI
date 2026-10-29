@@ -26,3 +26,4 @@ export interface EventTimelinePlan {
   daysRemaining: number;
   phases: EventTimelinePhase[];
 }
+

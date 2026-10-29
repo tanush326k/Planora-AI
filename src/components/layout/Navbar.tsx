@@ -51,13 +51,14 @@ export function Navbar() {
             Phase 2: Foundation
           </span>
           <a
-            href="#categories"
+            href="/plan"
             className="inline-flex items-center justify-center rounded-lg bg-stone-900 px-3.5 py-2 text-xs font-semibold text-stone-50 shadow-sm transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
           >
-            Get Started
+            Plan Event
           </a>
         </div>
       </div>
     </header>
   );
 }
+

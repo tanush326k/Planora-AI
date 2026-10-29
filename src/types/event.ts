@@ -25,3 +25,4 @@ export interface EventCategoryInfo {
   keyPriorities: string[];
   suggestedBudgetCategories: string[];
 }
+

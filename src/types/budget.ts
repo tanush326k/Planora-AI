@@ -28,3 +28,4 @@ export interface EventBudgetPlan {
   categories: BudgetCategoryAllocation[];
   unallocatedAmount: number;
 }
+

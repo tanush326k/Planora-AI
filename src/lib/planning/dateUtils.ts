@@ -28,40 +28,56 @@ export function isValidCalendarDate(dateStr: string): boolean {
 }
 
 /**
- * Determines whether a YYYY-MM-DD date is strictly in the past.
+ * Validates whether a string is a recognized IANA timezone identifier.
+ * Safe fallback to UTC occurs if validation fails.
+ */
+export function isValidTimeZone(tz?: string): boolean {
+  if (!tz || typeof tz !== 'string') return false;
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns today's calendar date as YYYY-MM-DD in the specified IANA timezone.
+ * Uses standard ECMAScript Intl with 'en-CA' locale (ISO YYYY-MM-DD).
+ */
+export function getTodayInTimezone(timeZone = 'UTC', relativeDate = new Date()): string {
+  const safeTz = isValidTimeZone(timeZone) ? timeZone : 'UTC';
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: safeTz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return formatter.format(relativeDate);
+}
+
+/**
+ * Determines whether a YYYY-MM-DD date is strictly in the past relative to
+ * the user's local calendar day in their validated IANA timezone.
  * 
- * Handles timezone boundaries consistently:
- * An event date is considered in the past only if it has already concluded
- * in both the local system time AND UTC.
- * Today's date remains valid across timezone boundaries.
+ * Accurately handles timezone offsets across India (UTC+5:30), US Pacific (UTC-8/UTC-7),
+ * US Eastern (UTC-5/UTC-4), and UTC without relying on arbitrary grace periods.
+ */
+export function isPastDateInTimezone(
+  dateStr: string,
+  timeZone = 'UTC',
+  relativeDate = new Date()
+): boolean {
+  if (!isValidCalendarDate(dateStr)) return false;
+  const todayStr = getTodayInTimezone(timeZone, relativeDate);
+  return dateStr.trim() < todayStr;
+}
+
+/**
+ * Legacy compatibility wrapper defaulting to UTC or specified relative date.
  */
 export function isPastDate(dateStr: string, relativeDate = new Date()): boolean {
-  if (!isValidCalendarDate(dateStr)) return false;
-
-  const [year, monthStr, dayStr] = dateStr.trim().split('-').map(Number);
-  const month = monthStr - 1;
-  const day = dayStr;
-
-  // Local calendar date comparison (midnight to midnight)
-  const targetDateLocal = new Date(year, month, day);
-  const localToday = new Date(
-    relativeDate.getFullYear(),
-    relativeDate.getMonth(),
-    relativeDate.getDate()
-  );
-
-  // UTC calendar date comparison (UTC midnight to UTC midnight)
-  const targetDateUTC = new Date(Date.UTC(year, month, day));
-  const utcToday = new Date(
-    Date.UTC(
-      relativeDate.getUTCFullYear(),
-      relativeDate.getUTCMonth(),
-      relativeDate.getUTCDate()
-    )
-  );
-
-  // Strictly in the past only if it has elapsed in both local and UTC frames
-  return targetDateLocal < localToday && targetDateUTC < utcToday;
+  return isPastDateInTimezone(dateStr, 'UTC', relativeDate);
 }
 
 export function calculateDaysRemaining(eventDateISO: string, relativeToDate = new Date()): number {

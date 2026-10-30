@@ -5,9 +5,38 @@ import { generateDeterministicPlan } from '@/lib/planning/deterministicPlanner';
 import { EventDetails } from '@/types/event';
 
 export async function POST(req: NextRequest) {
-  // 0. Enforce request payload size ceiling (50KB maximum)
+  const MAX_PAYLOAD_BYTES = 50 * 1024; // 50 KB
+
+  // 0. Fast-path check: Content-Length header if provided
   const contentLength = req.headers.get('content-length');
-  if (contentLength && parseInt(contentLength, 10) > 50 * 1024) {
+  if (contentLength && parseInt(contentLength, 10) > MAX_PAYLOAD_BYTES) {
+    return NextResponse.json(
+      {
+        status: 'error',
+        code: 'PAYLOAD_TOO_LARGE',
+        message: 'Request payload exceeds 50KB limit',
+      },
+      { status: 413 }
+    );
+  }
+
+  // 1. Read request text to enforce ceiling against chunked / missing Content-Length headers
+  let rawBodyText: string;
+  try {
+    rawBodyText = await req.text();
+  } catch {
+    return NextResponse.json(
+      {
+        status: 'error',
+        code: 'BAD_REQUEST',
+        message: 'Failed to read request body',
+      },
+      { status: 400 }
+    );
+  }
+
+  // Strict byte length inspection
+  if (Buffer.byteLength(rawBodyText, 'utf8') > MAX_PAYLOAD_BYTES) {
     return NextResponse.json(
       {
         status: 'error',
@@ -20,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   let body: unknown;
   try {
-    body = await req.json();
+    body = JSON.parse(rawBodyText);
   } catch {
     return NextResponse.json(
       {

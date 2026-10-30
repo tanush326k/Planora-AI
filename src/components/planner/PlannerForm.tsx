@@ -10,6 +10,22 @@ interface PlannerFormProps {
 }
 
 export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: PlannerFormProps) {
+  const localTodayString = (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  })();
+
+  const clientTimezone = (() => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    } catch {
+      return 'UTC';
+    }
+  })();
+
   const [eventType, setEventType] = useState<EventType>(initialType);
   const [title, setTitle] = useState(() => {
     if (initialType === 'wedding') return 'Golden Sunset Wedding & Reception';
@@ -19,7 +35,10 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
   const [date, setDate] = useState(() => {
     const future = new Date();
     future.setMonth(future.getMonth() + 6);
-    return future.toISOString().split('T')[0];
+    const year = future.getFullYear();
+    const month = String(future.getMonth() + 1).padStart(2, '0');
+    const day = String(future.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   });
   const [guestCount, setGuestCount] = useState<number | ''>(100);
   const [totalBudget, setTotalBudget] = useState<number | ''>(15000);
@@ -90,14 +109,8 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
     if (!title.trim()) errors.title = 'Please enter an event title';
     if (!date) {
       errors.date = 'Please pick an event date';
-    } else {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const [y, m, d] = date.split('-').map(Number);
-      const chosen = new Date(y, m - 1, d);
-      if (chosen < today) {
-        errors.date = 'Event date must be today or in the future';
-      }
+    } else if (date < localTodayString) {
+      errors.date = 'Event date must be today or in the future';
     }
     if (!guestCount || Number(guestCount) < 1) errors.guestCount = 'Guest count must be at least 1';
     if (!totalBudget || Number(totalBudget) < 50) errors.totalBudget = 'Total budget must be at least $50';
@@ -129,6 +142,7 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
           themeOrStyle: themeOrStyle.trim(),
           specialRequests: specialRequests.trim(),
           vibeKeywords,
+          timezone: clientTimezone,
           allowFallback: true, // Guarantees reliable response even if API key is not configured locally
         }),
       });
@@ -231,7 +245,7 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
               <input
                 id="event-date"
                 type="date"
-                min={new Date().toISOString().split('T')[0]}
+                min={localTodayString}
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
@@ -357,6 +371,7 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
                   <button
                     key={vibe}
                     type="button"
+                    aria-pressed={isSelected}
                     onClick={() => toggleVibe(vibe)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                       isSelected
@@ -395,7 +410,9 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
               {vibeKeywords.length < 10 && (
                 <div className="flex items-center gap-1.5">
                   <input
+                    id="custom-vibe-input"
                     type="text"
+                    aria-label="Add custom vibe tag"
                     value={customVibe}
                     onChange={(e) => setCustomVibe(e.target.value)}
                     onKeyDown={(e) => {

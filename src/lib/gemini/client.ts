@@ -208,10 +208,12 @@ export async function generatePlanWithGemini(
 
   try {
     const GEMINI_TIMEOUT_MS = 25000;
+    const abortController = new AbortController();
     let timerId: NodeJS.Timeout | undefined;
 
     const timeoutPromise = new Promise<never>((_, reject) => {
       timerId = setTimeout(() => {
+        abortController.abort();
         reject(
           new GeminiError(
             'Gemini request timed out after 25 seconds.',
@@ -228,6 +230,7 @@ export async function generatePlanWithGemini(
       config: {
         responseMimeType: 'application/json',
         responseSchema: geminiPlanSchema,
+        abortSignal: abortController.signal,
       },
     });
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { planGenerationInputSchema } from '../../lib/validation/planSchema';
+import { getTodayInTimezone } from '../../lib/planning/dateUtils';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const now = new Date();
@@ -25,6 +26,7 @@ const tomorrowStr = `${tDate.getFullYear()}-${pad(tDate.getMonth() + 1)}-${pad(t
     location: 'Charleston, SC',
     themeOrStyle: 'Botanical Elegance',
     vibeKeywords: ['Romantic', 'Garden', 'Intimate'],
+    timezone: 'America/New_York',
   };
 
   const parsed = planGenerationInputSchema.safeParse(valid);
@@ -32,6 +34,7 @@ const tomorrowStr = `${tDate.getFullYear()}-${pad(tDate.getMonth() + 1)}-${pad(t
   if (parsed.success) {
     assert.equal(parsed.data.currency, 'USD', 'Currency should be transformed to uppercase');
     assert.equal(parsed.data.vibeKeywords.length, 3, 'Should parse vibe keywords');
+    assert.equal(parsed.data.timezone, 'America/New_York', 'Should preserve timezone');
   }
 }
 
@@ -219,4 +222,40 @@ const tomorrowStr = `${tDate.getFullYear()}-${pad(tDate.getMonth() + 1)}-${pad(t
   assert.equal(longVibe.success, false, 'Vibe keyword > 30 chars must be rejected');
 }
 
-console.log('✓ Input validation, past-date & calendar boundary unit tests passed.');
+// Test 6: Timezone-Aware Schema Validation
+{
+  const base = {
+    title: 'Timezone Verified Wedding',
+    type: 'wedding' as const,
+    guestCount: 80,
+    totalBudget: 15000,
+  };
+
+  // Valid today in US Pacific
+  const todayLA = getTodayInTimezone('America/Los_Angeles');
+  const validLA = planGenerationInputSchema.safeParse({
+    ...base,
+    date: todayLA,
+    timezone: 'America/Los_Angeles',
+  });
+  assert.ok(validLA.success, `Today in LA (${todayLA}) must pass`);
+
+  // Valid today in India
+  const todayKolkata = getTodayInTimezone('Asia/Kolkata');
+  const validKolkata = planGenerationInputSchema.safeParse({
+    ...base,
+    date: todayKolkata,
+    timezone: 'Asia/Kolkata',
+  });
+  assert.ok(validKolkata.success, `Today in Kolkata (${todayKolkata}) must pass`);
+
+  // Invalid timezone string gracefully falls back to UTC
+  const fallbackTz = planGenerationInputSchema.safeParse({
+    ...base,
+    date: '2028-10-10',
+    timezone: 'Invalid/NonExistent_Zone',
+  });
+  assert.ok(fallbackTz.success, 'Invalid timezone string should safely fallback');
+}
+
+console.log('✓ Input validation, past-date, calendar boundary & timezone-aware unit tests passed.');

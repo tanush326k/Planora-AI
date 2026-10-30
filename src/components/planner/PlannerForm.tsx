@@ -27,6 +27,8 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
   const [location, setLocation] = useState('');
   const [themeOrStyle, setThemeOrStyle] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
+  const [vibeKeywords, setVibeKeywords] = useState<string[]>([]);
+  const [customVibe, setCustomVibe] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
@@ -54,6 +56,30 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
     if (newType === 'community' && (totalBudget === 3500 || totalBudget === '')) setTotalBudget(10000);
   };
 
+  const CURATED_VIBES: Record<EventType, string[]> = {
+    wedding: ['Romantic', 'Classic Elegance', 'Rustic Chic', 'Modern Minimalist', 'Boho Garden', 'Intimate', 'Luxe Black-Tie'],
+    birthday: ['High-Energy', 'Festive & Fun', 'Retro 80s/90s', 'Cozy Gathering', 'Vibrant Fiesta', 'Cocktail Lounge', 'Playful & Colorful'],
+    community: ['Family-Friendly', 'Eco-Friendly', 'Cultural Celebration', 'Inclusive & Accessible', 'Charity Gala', 'Block Party Spirit'],
+  };
+
+  const toggleVibe = (vibe: string) => {
+    setVibeKeywords((prev) =>
+      prev.includes(vibe) ? prev.filter((v) => v !== vibe) : prev.length < 10 ? [...prev, vibe] : prev
+    );
+  };
+
+  const removeVibe = (vibe: string) => {
+    setVibeKeywords((prev) => prev.filter((v) => v !== vibe));
+  };
+
+  const handleAddCustomVibe = () => {
+    const trimmed = customVibe.trim();
+    if (trimmed && !vibeKeywords.includes(trimmed) && vibeKeywords.length < 10) {
+      setVibeKeywords((prev) => [...prev, trimmed.slice(0, 30)]);
+      setCustomVibe('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -62,7 +88,17 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
     // Client-side quick validation
     const errors: Record<string, string> = {};
     if (!title.trim()) errors.title = 'Please enter an event title';
-    if (!date) errors.date = 'Please pick an event date';
+    if (!date) {
+      errors.date = 'Please pick an event date';
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const [y, m, d] = date.split('-').map(Number);
+      const chosen = new Date(y, m - 1, d);
+      if (chosen < today) {
+        errors.date = 'Event date must be today or in the future';
+      }
+    }
     if (!guestCount || Number(guestCount) < 1) errors.guestCount = 'Guest count must be at least 1';
     if (!totalBudget || Number(totalBudget) < 50) errors.totalBudget = 'Total budget must be at least $50';
 
@@ -92,6 +128,7 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
           location: location.trim(),
           themeOrStyle: themeOrStyle.trim(),
           specialRequests: specialRequests.trim(),
+          vibeKeywords,
           allowFallback: true, // Guarantees reliable response even if API key is not configured locally
         }),
       });
@@ -99,6 +136,14 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
       const data = await response.json();
 
       if (!response.ok || data.status !== 'success') {
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          const fieldErrors: Record<string, string> = {};
+          data.errors.forEach((err: { field: string; message: string }) => {
+            if (err.field) fieldErrors[err.field] = err.message;
+          });
+          setValidationErrors(fieldErrors);
+          throw new Error(data.errors.map((e: { message: string }) => e.message).join('. '));
+        }
         throw new Error(data.message || 'Failed to generate event plan');
       }
 
@@ -186,6 +231,7 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
               <input
                 id="event-date"
                 type="date"
+                min={new Date().toISOString().split('T')[0]}
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
@@ -289,6 +335,90 @@ export function PlannerForm({ initialType = 'wedding', onPlanGenerated }: Planne
                 placeholder="e.g. Modern Rustic, 80s Disco, Garden Gala"
                 className="w-full rounded-xl border border-stone-300 dark:border-stone-700 px-3.5 py-2.5 text-sm bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 transition"
               />
+            </div>
+          </div>
+
+          {/* Vibe Tags Chip Selector */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300">
+                Atmosphere & Vibe Tags (Optional)
+              </label>
+              <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                {vibeKeywords.length}/10 selected
+              </span>
+            </div>
+
+            {/* Curated Vibe Chips */}
+            <div className="flex flex-wrap gap-2 mb-2.5">
+              {CURATED_VIBES[eventType].map((vibe) => {
+                const isSelected = vibeKeywords.includes(vibe);
+                return (
+                  <button
+                    key={vibe}
+                    type="button"
+                    onClick={() => toggleVibe(vibe)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                      isSelected
+                        ? 'bg-amber-600 text-white shadow-sm'
+                        : 'bg-stone-100 hover:bg-stone-200 text-stone-700 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-300'
+                    }`}
+                  >
+                    <span>{vibe}</span>
+                    {isSelected && <span aria-hidden="true" className="text-[10px]">✕</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom Vibe Input & Active Custom Tags */}
+            <div className="flex flex-wrap items-center gap-2">
+              {vibeKeywords
+                .filter((v) => !CURATED_VIBES[eventType].includes(v))
+                .map((customTag) => (
+                  <span
+                    key={customTag}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800"
+                  >
+                    <span>{customTag}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeVibe(customTag)}
+                      className="hover:text-amber-700 dark:hover:text-amber-100 focus:outline-none"
+                      aria-label={`Remove ${customTag}`}
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+
+              {vibeKeywords.length < 10 && (
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={customVibe}
+                    onChange={(e) => setCustomVibe(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddCustomVibe();
+                      }
+                    }}
+                    placeholder="+ Add custom vibe..."
+                    maxLength={30}
+                    className="rounded-full border border-stone-300 dark:border-stone-700 px-3 py-1 text-xs bg-white dark:bg-stone-950 text-stone-800 dark:text-stone-200 placeholder:text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                  />
+                  {customVibe.trim() && (
+                    <button
+                      type="button"
+                      onClick={handleAddCustomVibe}
+                      className="text-xs px-2.5 py-1 rounded-full bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-semibold"
+                    >
+                      Add
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidCalendarDate, isPastDate } from '../planning/dateUtils';
 
 export const planGenerationInputSchema = z.object({
   title: z
@@ -12,8 +13,11 @@ export const planGenerationInputSchema = z.object({
   date: z
     .string({ required_error: 'Event date is required' })
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
-    .refine((val) => !isNaN(Date.parse(val)), {
+    .refine(isValidCalendarDate, {
       message: 'Date must be a valid calendar date',
+    })
+    .refine((val) => !isPastDate(val), {
+      message: 'Event date must be today or in the future',
     }),
   guestCount: z
     .number({ required_error: 'Guest count is required' })
@@ -57,24 +61,4 @@ export const planGenerationInputSchema = z.object({
 
 export type PlanGenerationInput = z.infer<typeof planGenerationInputSchema>;
 
-export const planRefinementInputSchema = z.object({
-  planId: z.string().min(1, 'planId is required'),
-  currentPlan: z.any({ required_error: 'currentPlan object is required' }),
-  userMessage: z
-    .string({ required_error: 'User refinement message is required' })
-    .trim()
-    .min(2, 'Refinement message must be at least 2 characters')
-    .max(800, 'Refinement message cannot exceed 800 characters'),
-  chatHistory: z
-    .array(
-      z.object({
-        role: z.enum(['user', 'assistant']),
-        content: z.string(),
-      })
-    )
-    .optional()
-    .default([]),
-});
-
-export type PlanRefinementInput = z.infer<typeof planRefinementInputSchema>;
 

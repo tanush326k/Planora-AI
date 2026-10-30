@@ -5,6 +5,19 @@ import { generateDeterministicPlan } from '@/lib/planning/deterministicPlanner';
 import { EventDetails } from '@/types/event';
 
 export async function POST(req: NextRequest) {
+  // 0. Enforce request payload size ceiling (50KB maximum)
+  const contentLength = req.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > 50 * 1024) {
+    return NextResponse.json(
+      {
+        status: 'error',
+        code: 'PAYLOAD_TOO_LARGE',
+        message: 'Request payload exceeds 50KB limit',
+      },
+      { status: 413 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -121,7 +134,9 @@ export async function POST(req: NextRequest) {
       }
     );
   } catch (err: unknown) {
-    console.error('Gemini plan generation error:', err instanceof Error ? err.message : String(err));
+    const rawMsg = err instanceof Error ? err.message : String(err);
+    const safeLogMsg = rawMsg.replace(/AIza[0-9A-Za-z-_]{35}/g, '[REDACTED_API_KEY]');
+    console.error('Gemini plan generation error:', safeLogMsg);
 
     if (!allowFallback) {
       if (err instanceof GeminiError) {
@@ -145,8 +160,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Graceful fallback with clear attribution
-    const safeErrorNotice = err instanceof GeminiError ? err.message : 'External AI service temporarily unavailable';
+    // Graceful fallback with sanitized user-facing attribution
+    let safeErrorNotice = 'External AI service temporarily unavailable';
+    if (err instanceof GeminiError) {
+      if (err.code === 'TIMEOUT') {
+        safeErrorNotice = 'AI generation request timed out after 25s';
+      } else if (err.code === 'RATE_LIMIT_EXCEEDED') {
+        safeErrorNotice = 'AI capacity rate limit reached';
+      } else if (err.message.includes('503') || err.message.toLowerCase().includes('high demand') || err.message.toLowerCase().includes('unavailable')) {
+        safeErrorNotice = 'AI service temporarily experiencing high demand';
+      } else {
+        safeErrorNotice = err.message.replace(/\{"error":\{.*\}\}/, 'service unavailable');
+      }
+    }
     const fallbackPlan = generateDeterministicPlan(eventDetails, {
       specialRequests: input.specialRequests,
       vibeKeywords: input.vibeKeywords,

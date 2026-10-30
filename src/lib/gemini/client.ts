@@ -10,6 +10,7 @@ import { EventDetails } from '@/types/event';
 import { GeneratedEventPlan, PersonalizedIdea, ThemeConcept } from '@/types/genai';
 import { calculateBaselineBudget } from '../planning/budgetCalculator';
 import { calculateDaysRemaining, computeMilestoneTargetDate } from '../planning/dateUtils';
+import { buildEventPlanPrompt } from './promptTemplates';
 import { EventTimelinePhase, TimelineMilestone } from '@/types/timeline';
 import { VendorChecklistItem } from '@/types/vendor';
 
@@ -197,26 +198,31 @@ export async function generatePlanWithGemini(
   const ai = new GoogleGenAI({ apiKey: config.apiKey });
   const daysRemaining = calculateDaysRemaining(details.date);
 
-  const prompt = `You are Planora AI, an expert event planner specializing in ${details.type}s.
-Every celebration, brilliantly planned.
-Create a thoughtful, date-aware, and creative plan tailored to:
-
-Event Title: ${details.title}
-Event Type: ${details.type}
-Event Date: ${details.date} (${daysRemaining} days away)
-Guest Count: ${details.guestCount}
-Total Budget: ${details.totalBudget} ${details.currency}
-Location: ${details.location || 'Not specified'}
-Theme / Preferred Style: ${details.themeOrStyle || 'Classic & Joyful'}
-${options?.specialRequests ? `Special Requests: ${options.specialRequests}` : ''}
-${options?.vibeKeywords && options.vibeKeywords.length > 0 ? `Vibe Keywords: ${options.vibeKeywords.join(', ')}` : ''}
-
-Provide structured output conforming exactly to the JSON schema.`;
+  const prompt = buildEventPlanPrompt(details, {
+    specialRequests: options?.specialRequests,
+    vibeKeywords: options?.vibeKeywords,
+    daysRemaining,
+  });
 
   let responseText: string | undefined;
 
   try {
-    const response = await ai.models.generateContent({
+    const GEMINI_TIMEOUT_MS = 25000;
+    let timerId: NodeJS.Timeout | undefined;
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timerId = setTimeout(() => {
+        reject(
+          new GeminiError(
+            'Gemini request timed out after 25 seconds.',
+            'TIMEOUT',
+            504
+          )
+        );
+      }, GEMINI_TIMEOUT_MS);
+    });
+
+    const generatePromise = ai.models.generateContent({
       model: config.model,
       contents: prompt,
       config: {
@@ -225,8 +231,15 @@ Provide structured output conforming exactly to the JSON schema.`;
       },
     });
 
+    const response = await Promise.race([generatePromise, timeoutPromise]);
+    if (timerId) clearTimeout(timerId);
+
     responseText = response.text;
   } catch (err: unknown) {
+    if (err instanceof GeminiError) {
+      throw err;
+    }
+
     const errorMsg = err instanceof Error ? err.message : String(err);
 
     // Sanitize any potential secrets from error message
@@ -237,6 +250,14 @@ Provide structured output conforming exactly to the JSON schema.`;
         'Gemini rate limit or quota exceeded. Please try again shortly.',
         'RATE_LIMIT_EXCEEDED',
         429
+      );
+    }
+
+    if (sanitizedMsg.includes('504') || sanitizedMsg.toLowerCase().includes('timeout') || sanitizedMsg.toLowerCase().includes('deadline')) {
+      throw new GeminiError(
+        'Gemini request timed out. Please try again shortly.',
+        'TIMEOUT',
+        504
       );
     }
 

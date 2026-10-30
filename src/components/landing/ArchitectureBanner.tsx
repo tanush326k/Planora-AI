@@ -15,7 +15,7 @@ export function ArchitectureBanner() {
             </h2>
 
             <p className="text-stone-300 text-base leading-relaxed mb-6">
-              Planora AI avoids brittle, hallucinated end-to-end LLM prompts. Instead, it pairs a deterministic calculation engine (for hard budget ceilings and backwards milestone dates) with Google Gemini 3.8 Flash (for personalized theme concepts, vendor questions, and creative sparks).
+              Planora AI avoids brittle, hallucinated end-to-end LLM prompts. Instead, it pairs a deterministic calculation engine (for hard budget ceilings and backwards milestone dates) with Google Gemini 2.5 Flash (for personalized theme concepts, vendor questions, and creative sparks).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-stone-700/80 pt-6 mb-8">
@@ -24,7 +24,7 @@ export function ArchitectureBanner() {
                   GenAI Layer
                 </span>
                 <p className="text-sm font-medium text-white">
-                  @google/genai SDK (gemini-3.8-flash)
+                  @google/genai SDK (gemini-2.5-flash)
                 </p>
                 <p className="text-xs text-stone-400">
                   Strict JSON schema validation & fallback protection
